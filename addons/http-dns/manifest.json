@@ -1,0 +1,32 @@
+{
+  "manifest_version": 2,
+  "name": "HTTP DNS",
+  "description": "Rollout of DNS over HTTPS",
+  "version": "1.0",
+
+  "applications": {
+    "gecko": {
+      "id": "httpdns@test.mozilla.org"
+    }
+  },
+
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+
+  "experiment_apis": {
+    "rollout": {
+      "schema": "experiments/rollout/schema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "script": "experiments/rollout/api.js",
+        "paths": [["experiments", "rollout"]]
+      }
+    }
+  }
+}
