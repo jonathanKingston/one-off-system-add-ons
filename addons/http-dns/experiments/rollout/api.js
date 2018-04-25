@@ -2,11 +2,10 @@
 
 
 /* global Components, ExtensionAPI */
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Ci = Components.interfaces;
-Cu.import("resource://gre/modules/Services.jsm");
+let Cu2 = Components.utils;
+Cu2.import("resource://gre/modules/Services.jsm");
 
+// TODO file scope issue on experiments that join extension contexts causing redeclaration issues.
 
 const prefManager = {
   setPrefs(prefs) {
@@ -55,7 +54,7 @@ const prefManager = {
 }
 
 var rollout = class rollout extends ExtensionAPI {
-  getAPI() {
+  getAPI(context) {
     return {
       experiments: {
         rollout: {
@@ -65,6 +64,21 @@ var rollout = class rollout extends ExtensionAPI {
           async setPrefs(prefs) {
             return prefManager.setPrefs(prefs);
           },
+          promptResponse: new ExtensionCommon.EventManager(
+            context,
+            "rollout.promptResponse",
+            fire => {
+              let observer = (subject, topic) => {
+console.log("ss", subject, topic);
+                fire.async({name: subject.wrappedJSObject.callbackId});
+              };
+        
+              Services.obs.addObserver(observer, "rollout-prompt-response");
+              return () => {
+                Services.obs.removeObserver(observer, "rollout-prompt-response");
+              };
+            },
+          ).api(),
         },
       },
     };

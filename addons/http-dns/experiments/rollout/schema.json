@@ -18,9 +18,44 @@
             "type": "any"
           }
         }
+      },
+      {
+        "id": "button",
+        "type": "object",
+        "description": "Button object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "accessKey": {
+            "type": "string"
+          },
+          "callbackId": {
+            "type": "string"
+          }
+        }
       }
     ],
     "functions": [
+      {
+        "name": "showPrompt",
+        "type": "function",
+        "description": "Calls the showPrompt() function",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "message",
+            "description": "A message to show in the prompt"
+          },
+          {
+            "type": "array",
+            "name": "buttons",
+            "description": "An array of prefNames",
+            "items": { "$ref": "button" }
+          }
+        ],
+        "async": true
+      },
       {
         "name": "setPrefs",
         "type": "function",
@@ -48,6 +83,25 @@
           }
         ],
         "async": true
+      }
+    ],
+    "events": [
+      {
+        "name": "promptResponse",
+        "type": "function",
+        "description": "Fired when a prompt responds.",
+        "parameters": [
+          {
+            "type": "object",
+            "name": "changeInfo",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Response name"
+              }
+            }
+          }
+        ]
       }
     ]
   }

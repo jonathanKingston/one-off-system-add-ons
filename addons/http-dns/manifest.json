@@ -12,7 +12,7 @@
 
   "permissions": [
     "storage",
-    "tabs"
+    "notifications"
   ],
 
   "background": {
@@ -26,6 +26,14 @@
         "scopes": ["addon_parent"],
         "script": "experiments/rollout/api.js",
         "paths": [["experiments", "rollout"]]
+      }
+    },
+    "notifications": {
+      "schema": "experiments/notifications/schema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "script": "experiments/notifications/api.js",
+        "paths": [["experiments", "notifications"]]
       }
     }
   }

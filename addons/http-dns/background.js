@@ -119,30 +119,41 @@ const rollout = {
     }
   },
 
-  handleMessage(message) {
-    switch (message.method) {
-      case "disable":
-        this.disable();
-        break;
-    }
-  },
-
   async disable() {
     await stateManager.setState("disabled");
-    const url = this.introUrl;
-    const tabs = await browser.tabs.query({url});
-    return browser.tabs.remove(tabs.map(({id}) => id));
-  },
-
-  get introUrl() {
-    return browser.runtime.getURL("intro.html");
   },
 
   async show() {
     await stateManager.setState("enabled");
-    const url = this.introUrl;
-    browser.tabs.create({
-      url
+    let notificationMessage = "Mozilla is working to improve privacy and security on the web. We are conducting studies that send encrypted DNS requests to Cloudflare, a secure, cloud-based service.";
+    let buttons = [
+      {
+        label: "Disable DNS Studies",
+        callbackId: "disable"
+      },
+      {
+        label: "Ok, Got It",
+        callbackId: "ok"
+      },
+    ];
+    browser.experiments.notifications.onButtonClicked.addListener((options) => {
+      switch (Number(options.buttonIndex)) {
+        case 1:
+          console.log("ok");
+          break;
+        case 0:
+          this.disable();
+          break;
+      }
+    });
+    browser.experiments.notifications.create("rollout-prompt", {
+      type: "prompt",
+      title: "",
+      message: notificationMessage,
+      buttons: [
+        {title: "Disable DNS Studies"},
+        {title: "Ok, Got It"}
+      ]
     });
   }
 };
