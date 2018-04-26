@@ -8,11 +8,10 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 const {EventManager} = ExtensionCommon;
 
-const ToolkitModules = {};
-
 // Implements an experimental extension to the notifications api
 
 Cu.import("resource://gre/modules/EventEmitter.jsm");
+Cu.import("resource://gre/modules/BrowserUtils.jsm");
 
 class NotificationPrompt {
   constructor(extension, notificationsMap, id, options) {
@@ -38,7 +37,17 @@ class NotificationPrompt {
       }
     }
     this.box = browserWin.document.getElementById("global-notificationbox");
-    this.box.appendNotification(options.message, id, null, this.box.PRIORITY_INFO_HIGH,
+    let outputMessage = options.message;
+    if (options.moreInfo) {
+        let mainMessage = "%S %S";
+        let text = options.moreInfo.title || "Learn more";
+        let link = browserWin.document.createElement("label");
+        link.className = "text-link";
+        link.setAttribute("href", options.moreInfo.url);
+        link.textContent = text;
+        outputMessage = BrowserUtils.getLocalizedFragment(browserWin.document, mainMessage, outputMessage, link);
+    }
+    this.box.appendNotification(outputMessage, id, null, this.box.PRIORITY_INFO_HIGH,
       buttonsOutput);
   }
 

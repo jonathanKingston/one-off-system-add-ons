@@ -93,6 +93,20 @@
             "description": "A URL to the image thumbnail for image-type notifications.",
             "type": "string"
           },
+          "moreInfo": {
+            "optional": true,
+            "description": "Aditional learn more link",
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "title": {
+                "optional": true,
+                "type": "string"
+              }
+            }
+          },
           "items": {
             "optional": true,
             "description": "Items for multi-item notifications.",

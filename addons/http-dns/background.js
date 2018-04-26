@@ -153,7 +153,11 @@ const rollout = {
       buttons: [
         {title: "Disable DNS Studies"},
         {title: "Ok, Got It"}
-      ]
+      ],
+      moreInfo: {
+        url: "http://mozilla.org",
+        title: "Learn More"
+      }
     });
   }
 };
