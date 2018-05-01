@@ -125,17 +125,6 @@ const rollout = {
 
   async show() {
     await stateManager.setState("enabled");
-    let notificationMessage = "Mozilla is working to improve privacy and security on the web. We are conducting studies that send encrypted DNS requests to Cloudflare, a secure, cloud-based service.";
-    let buttons = [
-      {
-        label: "Disable DNS Studies",
-        callbackId: "disable"
-      },
-      {
-        label: "Ok, Got It",
-        callbackId: "ok"
-      },
-    ];
     browser.experiments.notifications.onButtonClicked.addListener((options) => {
       switch (Number(options.buttonIndex)) {
         case 1:
@@ -149,14 +138,14 @@ const rollout = {
     browser.experiments.notifications.create("rollout-prompt", {
       type: "prompt",
       title: "",
-      message: notificationMessage,
+      message: browser.i18n.getMessage("notificationMessage"),
       buttons: [
-        {title: "Disable DNS Studies"},
-        {title: "Ok, Got It"}
+        {title: browser.i18n.getMessage("disableButtonText")},
+        {title: browser.i18n.getMessage("acceptButtonText")}
       ],
       moreInfo: {
         url: "http://mozilla.org",
-        title: "Learn More"
+        title: browser.i18n.getMessage("learnMoreLinkText")
       }
     });
   }

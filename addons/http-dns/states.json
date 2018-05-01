@@ -4,6 +4,11 @@
     "network.trr.uri": "string",
     "network.trr.experimentalRollout": "int"
   },
+  "_comment_a": "check mode is 0 before enabling",
+  "prerequesitePrefs": {
+    "network.trr.mode": 0
+  },
+  "_comment_b": "disable check user changed and don't modify if changed.",
   "statePref": "network.trr.experimentalRollout",
   "states": {
     "loaded": {
