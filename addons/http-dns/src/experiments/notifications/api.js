@@ -14,7 +14,6 @@ Cu.import("resource://gre/modules/EventEmitter.jsm");
 Cu.import("resource://gre/modules/BrowserUtils.jsm");
 
 function loadStyles(resourceURI) {
-Cu.reportError("ss " + resourceURI);
   const styleSheetService = Cc["@mozilla.org/content/style-sheet-service;1"]
                             .getService(Ci.nsIStyleSheetService);
   const styleURI = styleSheet(resourceURI);
@@ -23,8 +22,7 @@ Cu.reportError("ss " + resourceURI);
 }
 
 function styleSheet(resourceURI) {
-  //return Services.io.newURI("../../../prompt.css");
-  return Services.io.newURI("data/prompt.css", null, resourceURI);
+  return Services.io.newURI("prompt.css", null, Services.io.newURI(resourceURI));
 }
 
 function unloadStyles(resourceURI) {
@@ -44,7 +42,7 @@ class NotificationPrompt {
     this.options = options;
 
     //loadStyles(extension.resourceURL + "");
-    //loadStyles(extension.baseURI.spec + "");
+    loadStyles(extension.baseURI.spec + "");
 
     const browserWin = Services.wm.getMostRecentWindow("navigator:browser");
     let buttonsOutput = [];
@@ -70,6 +68,7 @@ class NotificationPrompt {
         let text = options.moreInfo.title || "Learn more";
         let link = browserWin.document.createElement("label");
         link.className = "text-link";
+        link.setAttribute("useoriginprincipal", true);
         link.setAttribute("href", options.moreInfo.url);
         link.textContent = text;
         outputMessage = BrowserUtils.getLocalizedFragment(browserWin.document, mainMessage, outputMessage, link);
@@ -110,6 +109,13 @@ var notifications = class notifications extends ExtensionAPI {
     return {
       experiments: {
         notifications: {
+          clear: function(notificationId) {
+            if (notificationsMap.has(notificationId)) {
+              notificationsMap.get(notificationId).clear();
+              return Promise.resolve(true);
+            }
+            return Promise.resolve(false);
+          },
           create: (notificationId, options) => {
             if (!notificationId) {
               notificationId = String(this.nextId++);

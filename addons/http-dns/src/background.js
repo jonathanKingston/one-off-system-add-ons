@@ -3,6 +3,9 @@
 /* global browser */
 const HAS_SEEN_VERSION = 1;
 const STORAGE_AREA = "local";
+const STUDY_URL = browser.extension.getURL("study.html");
+// TODO delete debug
+//browser.tabs.create({"url": STUDY_URL});
 
 const stateManager = {
   hasInit: false,
@@ -89,6 +92,21 @@ const stateManager = {
   },
 
   /**
+   * Ensure that the user hasn't modified any pref in the prerequisite list
+   */
+  async checkPrerequisites() {
+    await this.init();
+    const prerequisitePrefs = this.statesInfo.prerequisitePrefs;
+    const prefValues = await this.getPrefs(prerequisitePrefs);
+    for (let pref of prerequisitePrefs) {
+      if (null !== prefValues[pref]) {
+        return false;
+      }
+    }
+    return true;
+  },
+
+  /**
    * Get the initial user values of the experiments preferences and store them into the extension
    */
   async setInitialUserPrefValues() {
@@ -111,7 +129,9 @@ const rollout = {
       case "loaded":
         await stateManager.setInitialUserPrefValues();
         await stateManager.setState("loaded");
-        await this.show();
+        if (await stateManager.checkPrerequisites()) {
+          await this.show();
+        }
         break;
       case "enabled":
       case "disabled":
@@ -119,8 +139,22 @@ const rollout = {
     }
   },
 
+  async handleMessage(message) {
+    switch (message.method) {
+      case "disable":
+        await this.disable();
+        break;
+    }
+  },
+
   async disable() {
+    // TODO don't clear prefs if the user has changed after the experiment started
     await stateManager.setState("disabled");
+    const tabs = await browser.tabs.query({
+      url: STUDY_URL
+    });
+    browser.tabs.remove(tabs.map((tab) => tab.id));
+    browser.experiments.notifications.clear("rollout-prompt");
   },
 
   async show() {
@@ -144,7 +178,7 @@ const rollout = {
         {title: browser.i18n.getMessage("acceptButtonText")}
       ],
       moreInfo: {
-        url: "http://mozilla.org",
+        url: STUDY_URL,
         title: browser.i18n.getMessage("learnMoreLinkText")
       }
     });

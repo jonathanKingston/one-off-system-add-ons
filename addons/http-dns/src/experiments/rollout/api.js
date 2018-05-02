@@ -69,7 +69,6 @@ var rollout = class rollout extends ExtensionAPI {
             "rollout.promptResponse",
             fire => {
               let observer = (subject, topic) => {
-console.log("ss", subject, topic);
                 fire.async({name: subject.wrappedJSObject.callbackId});
               };
         

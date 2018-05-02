@@ -130,6 +130,31 @@
     ],
     "functions": [
       {
+        "name": "clear",
+        "type": "function",
+        "description": "Clears an existing notification.",
+        "async": "callback",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "notificationId",
+            "description": "The id of the notification to be updated."
+          },
+          {
+            "optional": true,
+            "type": "function",
+            "name": "callback",
+            "parameters": [
+              {
+                "name": "wasCleared",
+                "type": "boolean",
+                "description": "Indicates whether a matching notification existed."
+              }
+            ]
+          }
+        ]
+      },
+      {
         "name": "create",
         "type": "function",
         "description": "Creates and displays a notification.",
