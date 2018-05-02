@@ -64,20 +64,6 @@ var rollout = class rollout extends ExtensionAPI {
           async setPrefs(prefs) {
             return prefManager.setPrefs(prefs);
           },
-          promptResponse: new ExtensionCommon.EventManager(
-            context,
-            "rollout.promptResponse",
-            fire => {
-              let observer = (subject, topic) => {
-                fire.async({name: subject.wrappedJSObject.callbackId});
-              };
-        
-              Services.obs.addObserver(observer, "rollout-prompt-response");
-              return () => {
-                Services.obs.removeObserver(observer, "rollout-prompt-response");
-              };
-            },
-          ).api(),
         },
       },
     };
